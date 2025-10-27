@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Birthday Present</title>
+<style>
+  body {
+    background-color: black;
+    color: white;
+    font-family: monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100vh;
+    margin: 0;
+    padding: 20px;
+  }
+  #text { min-height: 100px; text-align: center; margin-bottom: 20px; white-space: pre-wrap; }
+  .cursor { display: inline-block; width: 10px; background-color: white; animation: blink 0.7s infinite; }
+  @keyframes blink { 0%,50%,100%{opacity:1;} 25%,75%{opacity:0;} }
+  #main-buttons, #category-section { display:none; flex-direction: column; gap: 10px; margin-top: 20px; }
+  button { padding: 10px 20px; cursor:pointer; font-size:16px; }
+  .selected { background-color: green; color: white; }
+</style>
+</head>
+<body>
+
+<div id="text"></div><span class="cursor"></span>
+
+<div id="main-buttons">
+  <button onclick="openCategory('online')">Online Gifts</button>
+  <button onclick="openCategory('physical')">Physical Gifts</button>
+</div>
+
+<div id="category-section">
+  <div id="gift-options"></div>
+  <div id="credit-counter"></div>
+  <button onclick="goBack()">Back to Main Menu</button>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
