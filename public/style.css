@@ -1,0 +1,62 @@
+
+  body {
+    background-color: black;
+    color: white;
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  #text {
+    font-size: 20px;
+    margin-bottom: 40px;
+    min-height: 50px; /* keeps space for typing text */
+  }
+
+  .cursor {
+    display: inline-block;
+    width: 2px;
+    background: white;
+    animation: blink 0.8s infinite;
+    vertical-align: bottom;
+  }
+
+  @keyframes blink {
+    0%, 50%, 100% { opacity: 1; }
+    25%, 75% { opacity: 0; }
+  }
+
+  button {
+    background-color: #222;
+    color: #fff;
+    border: 2px solid #fff;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s;
+  }
+
+  button:hover {
+    background-color: white;
+    color: black;
+  }
+
+  #gift-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+    align-items: center;
+  }
+
+  #category-section, #main-buttons {
+    display: none; /* show only when ready */
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }

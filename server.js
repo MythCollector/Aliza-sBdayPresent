@@ -1,47 +1,77 @@
 const express = require("express");
-const nodemailer = require("nodemailer");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const fs = require("fs");
 
 const app = express();
 app.use(bodyParser.json());
 app.use(cors());
+app.use(express.static("public"));
 
-// Replace with your Gmail credentials (use an App Password if 2FA is on)
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: "poukade@cassiaschools.org",
-    pass: "Books@recool13"
-  }
+// --- Path to store credits ---
+const CREDIT_FILE = "./credits.json";
+
+// --- Initialize credits file if it doesn't exist ---
+if (!fs.existsSync(CREDIT_FILE)) {
+  fs.writeFileSync(CREDIT_FILE, JSON.stringify({ online: 3, physical: 1 }, null, 2));
+}
+
+// --- Helper functions ---
+function readCredits() {
+  return JSON.parse(fs.readFileSync(CREDIT_FILE, "utf8"));
+}
+
+function writeCredits(credits) {
+  fs.writeFileSync(CREDIT_FILE, JSON.stringify(credits, null, 2));
+}
+
+// --- Get current credits ---
+app.get("/credits", (req, res) => {
+  const credits = readCredits();
+  res.json(credits);
 });
 
+// --- Spend credits (only after submit) ---
+app.post("/spend-credit", (req, res) => {
+  const { category, used } = req.body;
+
+  if (!["online", "physical"].includes(category)) {
+    return res.status(400).json({ success: false, message: "Invalid category" });
+  }
+
+  const credits = readCredits();
+  const available = credits[category] ?? 0;
+
+  if (used <= 0) {
+    return res.status(400).json({ success: false, message: "Invalid number of credits used" });
+  }
+
+  if (available < used) {
+    return res.json({ success: false, message: "Not enough credits", remaining: available });
+  }
+
+  credits[category] = available - used;
+  writeCredits(credits);
+
+  res.json({ success: true, remaining: credits[category] });
+});
+
+// --- Handle gift submissions (optional logging) ---
 app.post("/send-gifts", (req, res) => {
   const { selectedGifts, category, subcategory } = req.body;
 
-  // Email to you
-  const mailToYou = {
-    from: "poukade@cassiaschools.org",
-    to: "poukade@cassiaschools.org",
-    subject: `Aliza's Gift Selection`,
-    text: `Category: ${category}\nSubcategory: ${subcategory}\nSelected Gifts:\n${selectedGifts.join("\n")}`
-  };
+  if (!selectedGifts || !Array.isArray(selectedGifts)) {
+    return res.status(400).send("Invalid gift selection data.");
+  }
 
-  // Email to her
-  const mailToHer = {
-    from: "poukade@cassiaschools.org",
-    to: "rosaliza@cassiaschools.org",
-    subject: `Your Gift Form`,
-    text: `Hi Aliza!\n\nThanks for selecting your gifts!\nPlease fill out this form: https://forms.gle/example123`
-  };
+  console.log("🎁 Gift submission received:");
+  console.log("- Category:", category);
+  console.log("- Subcategory:", subcategory);
+  console.log("- Selected Gifts:", selectedGifts);
 
-  transporter.sendMail(mailToYou, (err, info) => {
-    if (err) return res.status(500).send(err.toString());
-    transporter.sendMail(mailToHer, (err2, info2) => {
-      if (err2) return res.status(500).send(err2.toString());
-      res.send("Emails sent successfully!");
-    });
-  });
+  res.send("✅ Gift selection received!");
 });
 
-app.listen(3000, () => console.log("Server running on port 3000"));
+// --- Start server ---
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`🎁 Server running on port ${PORT}`));
