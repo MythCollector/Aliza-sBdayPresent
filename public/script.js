@@ -178,7 +178,7 @@ function submitGifts() {
       updateCreditsDisplay();
 
       // Send gift selection to Apps Script
-      const scriptURL = "https://script.google.com/macros/s/AKfycbwXQciHKfZLZSag-5vAd1_DCeSBr3NZvW1OGgmFgkWw9t3nTH3I10wIOaIcITuWvLbZ/exec";
+      const scriptURL = "https://script.google.com/macros/s/AKfycby934mOjD8EfbwO4U3wy7r5GaFmB5bMgMmycozvOtiwj7H2MrPRHjfKzwbcuEoRrgC_/exec";
       return fetch(scriptURL, {
         method: "POST",
         body: JSON.stringify({
